@@ -1,80 +1,260 @@
-use serde::{Deserialize, Serialize};
-use serde_json::Result;
-
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Edition {
-    pub other_titles: Vec<String>,//["El anarquismo en Am\u00e9rica latina"],
-    pub publishers: Vec<String>,//["AK Press"],
-    number_of_pages: usize,
-    contributors: Vec<Contributor>, //[{"role": "Translator", "name": "Gabriel Palmer-Fern\u00e1ndez"}], 
-    covers: Vec<usize>, //[8162971],
-    physical_format: String,
-    last_modified: ModEvent, //{"type": "/type/datetime", "value": "2020-08-22T12:23:31.164154"},
-    latest_revision: usize, 
+
     pub key: String,
-    publish_places: Vec<String>, //["Chico, USA"], 
-    isbn_13: Vec<String>, //["9781849352826"], 
-    classifications: Classifications, //{"lccn_permalink": ["https://lccn.loc.gov/2017936242"]}, 
-    source_records: Vec<String>, //["marc:marc_openlibraries_sanfranciscopubliclibrary/sfpl_chq_2018_12_24_run06.mrc:132376748:2932", "amazon:1849352828"], 
-    title: String,
-    lccn: Vec<String>, //["2017936242"], 
-    translation_of: String,
-    identifiers: Identifiers,//{"google": ["qOdKAQAACAAJ"], "librarything": ["21118985"], "goodreads": ["34381034"]}, 
-    created: CreationEvent, //{"type": "/type/datetime", "value": "2018-04-22T19:38:47.930796"}, 
-    languages: Vec<Language>,//[{"key": "/languages/eng"}], 
-    local_id: Vec<String>, //["urn:sfpl:31223123562416"], 
-    publish_date: String,
-    oclc_numbers: Vec<String>, //["974677647"], 
-    works: Vec<Work>, //[{"key": "/works/OL17859861W"}],
+    pub title: String,
+    #[serde(default)]
+    pub subtitle: String,
     #[serde(rename = "type")]
-    pub t_ype: Kind, //{"key": "/type/edition"}, 
-    revision: usize, //7
+    pub type_field: Type,
+    #[serde(default)]
+    pub authors: Vec<Author>,
+    pub works: Vec<Work>,
+    #[serde(default)]
+    pub identifiers: Identifiers,
+    #[serde(default)]
+    #[serde(rename = "isbn_10")]
+    pub isbn10: Vec<String>,
+    #[serde(default)]
+    #[serde(rename = "isbn_13")]
+    pub isbn13: Vec<String>,
+    #[serde(default)]
+    pub lccn: Vec<String>,
+    #[serde(default)]
+    pub ocaid: String,
+    #[serde(default)]
+    #[serde(rename = "oclc_numbers")]
+    pub oclc_numbers: Vec<String>,
+    #[serde(default)]
+    pub covers: Vec<usize>,
+    #[serde(default)]
+    pub links: String,
+    #[serde(default)]
+    pub languages: Vec<Language>,
+    #[serde(default)]
+    #[serde(rename = "by_statement")]
+    pub by_statement: String,
+    #[serde(default)]
+    pub weight: Weight,
+    #[serde(default)]
+    #[serde(rename = "edition_name")]
+    pub edition_name: EditionName,
+    #[serde(default)]
+    #[serde(rename = "number_of_pages")]
+    pub number_of_pages: usize,
+    #[serde(default)]
+    pub pagination: String,
+    #[serde(default)]
+    #[serde(rename = "physical_dimensinos")]
+    pub physical_dimensions: PhysicalDimensions,
+    #[serde(default)]
+    #[serde(rename = "physical_format")]
+    pub physical_format: String,
+    #[serde(default)]
+    #[serde(rename = "publish_country")]
+    pub publish_country: String,
+    #[serde(default)]
+    #[serde(rename = "publish_date")]
+    pub publish_date: String,
+    #[serde(default)]
+    pub publish_places: Vec<String>,
+    #[serde(default)]
+    pub publishers: Vec<String>,
+    #[serde(default)]
+    pub contributions: Vec<String>,
+    #[serde(default)]
+    #[serde(rename = "dewey_decimal_class")]
+    pub dewey_decimal_class: String,
+    #[serde(default)]
+    pub genres: Vec<String>,
+    #[serde(default)]
+    #[serde(rename = "lc_classifications")]
+    pub lc_classifications: Vec<String>,
+    #[serde(default)]
+    #[serde(rename = "other_titles")]
+    pub other_titles: Vec<String>,
+    #[serde(default)]
+    pub series: Vec<String>,
+    #[serde(default)]
+    #[serde(rename = "source_records")]
+    pub source_records: Vec<String>,
+    #[serde(default)]
+    pub subjects: Vec<String>,
+    #[serde(default)]
+    #[serde(rename = "work_titles")]
+    pub work_titles: String,
+    #[serde(default)]
+    #[serde(rename = "table_of_contents")]
+    pub table_of_contents: TableOfContents,
+    #[serde(default)]
+    pub description: String,
+    #[serde(default)]
+    #[serde(rename = "first_sentence")]
+    pub first_sentence: String,
+    #[serde(default)]
+    pub notes: Notes,
+    pub revision: usize,
+    #[serde(default)]
+    #[serde(rename = "latest_revision")]
+    pub latest_revision: usize,
+    pub created: Created,
+    #[serde(rename = "last_modified")]
+    pub last_modified: LastModified,
 }
 
-#[derive(Serialize, Deserialize)]
-#[derive(Debug)]
-pub struct Kind {
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Title {
+    #[serde(rename = "type")]
+    pub type_field: String,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Subtitle {
+    #[serde(rename = "type")]
+    pub type_field: String,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Type {
     pub key: String,
+    //#[serde(rename = "type")]
+    //pub type_field: String,
+    //pub additional_properties: bool,
+    //pub properties: Properties2,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Author {
+    key: String,
+}
+
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Work {
-    key: String,
+    pub key: String,
 }
 
-#[derive(Serialize, Deserialize)]
-pub struct Language {
-    key: String,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct CreationEvent {
-    #[serde(rename = "type")]
-    t_ype: String,
-    value: String,
-}
-
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Identifiers {
-    google: Vec<String>,
     librarything: Vec<String>,
     goodreads: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize)]
-pub struct Classifications {
-    lccn_permalink: Vec<String>,
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Language {
+    key: String,
 }
 
-#[derive(Serialize, Deserialize)]
-pub struct ModEvent {
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ByStatement {
     #[serde(rename = "type")]
-    t_ype: String,
+    pub type_field: String,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Weight {
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub examples: Vec<String>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EditionName {
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub examples: Vec<String>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct NumberOfPages {
+    #[serde(rename = "type")]
+    pub type_field: usize,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Pagination {
+    #[serde(rename = "type")]
+    pub type_field: String,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PhysicalDimensions {
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub examples: Vec<String>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PhysicalFormat {
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub examples: Vec<String>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PublishDate {
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub examples: Vec<String>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TableOfContents {
+    #[serde(rename = "type")]
+    pub type_field: String,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Notes {
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub value: String,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Revision {
+    #[serde(rename = "type")]
+    pub type_field: String,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LatestRevision {
+    #[serde(rename = "type")]
+    pub type_field: String,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Created {
+    #[serde(rename = "type")]
+    type_field: String,
     value: String,
 }
 
-#[derive(Serialize, Deserialize)]
-pub struct Contributor{
-    role: String,
-    name: String,
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LastModified {
+    #[serde(rename = "type")]
+    type_field: String,
+    value: String,
 }
