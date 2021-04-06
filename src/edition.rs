@@ -121,10 +121,6 @@ pub struct Subtitle {
 #[serde(rename_all = "camelCase")]
 pub struct Type {
     pub key: String,
-    //#[serde(rename = "type")]
-    //pub type_field: String,
-    //pub additional_properties: bool,
-    //pub properties: Properties2,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
