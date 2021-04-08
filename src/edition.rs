@@ -126,7 +126,7 @@ pub struct Type {
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Author {
-    key: String,
+    pub key: String,
 }
 
 
@@ -139,14 +139,14 @@ pub struct Work {
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Identifiers {
-    librarything: Vec<String>,
-    goodreads: Vec<String>,
+    pub librarything: Vec<String>,
+    pub goodreads: Vec<String>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Language {
-    key: String,
+    pub key: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
@@ -243,14 +243,14 @@ pub struct LatestRevision {
 #[serde(rename_all = "camelCase")]
 pub struct Created {
     #[serde(rename = "type")]
-    type_field: String,
-    value: String,
+    pub type_field: String,
+    pub value: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LastModified {
     #[serde(rename = "type")]
-    type_field: String,
-    value: String,
+    pub type_field: String,
+    pub value: String,
 }

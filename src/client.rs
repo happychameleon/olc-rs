@@ -9,13 +9,21 @@ use crate::edition::{Edition};
 pub enum ApiType {
     Isbn,
     Works,
-    Books,
+    Editions,
 }
 
 pub enum CoverSize {
     S,
     M,
     L,
+}
+
+pub enum CoverKey {
+    ISBN,
+    OCLC,
+    LCCN,
+    OLID,
+    ID,
 }
 
 pub struct Client {
@@ -82,8 +90,6 @@ fn process_olid_key(json_olid: &String) -> String {
 }
 
 fn construct_uri(api_type: ApiType, isbn: &str) -> String{
-
-    
     let base_url = String::from("https://openlibrary.org");
 
     let isbn_path = "/isbn/";
