@@ -9,8 +9,8 @@ pub struct Edition {
     #[serde(rename = "type")]
     pub type_field: Type,
     #[serde(default)]
-    pub authors: Vec<Author>,
-    pub works: Vec<Work>,
+    pub authors: Vec<Authors>,
+    pub works: Vec<Works>,
     #[serde(default)]
     pub identifiers: Identifiers,
     #[serde(default)]
@@ -93,7 +93,7 @@ pub struct Edition {
     #[serde(rename = "first_sentence")]
     pub first_sentence: String,
     #[serde(default)]
-    pub notes: Notes,
+    pub notes: String,
     pub revision: usize,
     #[serde(default)]
     #[serde(rename = "latest_revision")]
@@ -101,6 +101,22 @@ pub struct Edition {
     pub created: Created,
     #[serde(rename = "last_modified")]
     pub last_modified: LastModified,
+}
+
+impl Edition {
+    pub fn get_author (&self) -> Vec<Authors> {
+        self.authors.clone()
+    }
+
+    pub fn get_works_ids (&self) -> Vec<String> {
+        let mut work_ids: Vec<String> = Vec::new();
+
+        for works in self.works.iter() {
+            work_ids.push(works.key.clone());
+        }
+
+        return work_ids;
+    }
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
@@ -125,14 +141,14 @@ pub struct Type {
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Author {
+pub struct Authors {
     pub key: String,
 }
 
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Work {
+pub struct Works {
     pub key: String,
 }
 
@@ -215,14 +231,6 @@ pub struct PublishDate {
 pub struct TableOfContents {
     #[serde(rename = "type")]
     pub type_field: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Notes {
-    #[serde(rename = "type")]
-    pub type_field: String,
-    pub value: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
