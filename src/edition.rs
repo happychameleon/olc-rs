@@ -93,7 +93,7 @@ pub struct Edition {
     #[serde(rename = "first_sentence")]
     pub first_sentence: String,
     #[serde(default)]
-    pub notes: String,
+    pub notes: Notes,
     pub revision: usize,
     #[serde(default)]
     #[serde(rename = "latest_revision")]
@@ -101,6 +101,12 @@ pub struct Edition {
     pub created: Created,
     #[serde(rename = "last_modified")]
     pub last_modified: LastModified,
+    #[serde(default)]
+    #[serde(rename = "isbn_invalid")]
+    pub isbn_invalid: Vec<String>,
+    #[serde(default)]
+    #[serde(rename = "ia_box_id")]
+    pub ia_box_id: Vec<String>,
 }
 
 impl Edition {
@@ -117,6 +123,14 @@ impl Edition {
 
         return work_ids;
     }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Notes {
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub value: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
@@ -197,13 +211,6 @@ pub struct NumberOfPages {
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Pagination {
-    #[serde(rename = "type")]
-    pub type_field: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct PhysicalDimensions {
     #[serde(rename = "type")]
     pub type_field: String,
@@ -236,13 +243,6 @@ pub struct TableOfContents {
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Revision {
-    #[serde(rename = "type")]
-    pub type_field: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct LatestRevision {
     #[serde(rename = "type")]
     pub type_field: String,
 }

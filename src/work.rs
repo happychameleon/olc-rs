@@ -5,7 +5,7 @@ pub struct Work {
     pub key: String,
     pub title: String,
     #[serde(default)]
-    pub subtitle: Subtitle, //No Idea What this looks like in real
+    pub subtitle: String,
     #[serde(rename = "type")]
     pub type_field: Type,
     #[serde(default)]
@@ -23,9 +23,9 @@ pub struct Work {
     pub subjects: Vec<String>,
     #[serde(default)]
     #[serde(rename = "first_publish_date")]
-    pub first_publish_date: FirstPublishDate, //No Idea What this looks like in real
+    pub first_publish_date: String, //No Idea What this looks like in real
     #[serde(default)]
-    pub description: Description, //No Idea What this looks like in real
+    pub description: String,
     #[serde(default)]
     pub notes: Notes, //No Idea What this looks like in real
     pub revision: usize,
@@ -48,13 +48,6 @@ impl Work {
 
         return author_ids;
     }
-}
-
-#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Subtitle {
-    #[serde(rename = "type")]
-    pub type_field: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
@@ -97,20 +90,6 @@ pub struct Id {
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LcClassifications {
-    #[serde(rename = "$ref")]
-    pub ref_field: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct FirstPublishDate {
-    #[serde(rename = "type")]
-    pub type_field: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Description {
     #[serde(rename = "$ref")]
     pub ref_field: String,
 }
