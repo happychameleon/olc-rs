@@ -2,9 +2,19 @@ use std::{fmt::format, fs::File};
 use std::io::Write;
 use surf::http::url;
 
+use async_std::task::block_on;
+
 use serde_json::{Value};
 
-use crate::edition::{Edition};
+use crate::edition::Edition;
+use crate::work::Work;
+use crate::author::Author;
+
+pub enum Paths {
+    works,
+    authors,
+    books,
+}
 
 pub enum ApiType {
     Isbn,
@@ -33,6 +43,9 @@ pub struct Client {
 #[derive(Clone)]
 pub struct Entity {
     olid: String,
+    edition: Edition,
+    work: Work,
+    author: Author,
 }
 
 impl Client {
@@ -42,15 +55,41 @@ impl Client {
         };
     }
 
+    pub async fn get_edition_by_isbn(){}
+
     pub async fn get_edition(&self, api_type: ApiType, search_key: String) -> Result<Edition, surf::Error> {
-        let uri = construct_uri(api_type, &search_key);
-
         let surf_client = surf::client().with(surf::middleware::Redirect::default());
+        let uri = construct_uri(api_type, &search_key);
+        println!("{}", uri);
+        let req = surf_client.get(uri);
 
-        let req = surf::get(uri);
-        let edition_json: Edition = surf_client.recv_json(req).await?;
-
+        let edition_json: Edition = block_on(surf_client.recv_json(req))?;
+        
         Ok(edition_json)
+    }
+
+    pub async fn get_author(&self, ol_id: String) -> Result<Author, surf::Error> {
+        let surf_client = surf::client().with(surf::middleware::Redirect::default());
+        let author_uri = construct_ol_uri(&ol_id);
+        println!("{}", author_uri);
+        let author_uri_req = surf_client.get(author_uri);
+        
+        let author_json: Author = surf_client.recv_json(author_uri_req).await?;
+
+        println!("is this empty?");
+        
+        Ok(author_json)
+    }
+
+    pub async fn get_work(&self, ol_id: String) -> Result<Work, surf::Error> {
+        let surf_client = surf::client().with(surf::middleware::Redirect::default());
+        let work_uri = construct_ol_uri(&ol_id);
+        println!("{}", work_uri);
+        let work_uri_req = surf_client.get(work_uri);
+
+        let work_json: Work = surf_client.recv_json(work_uri_req).await?;
+
+        Ok(work_json)
     }
 
     pub async fn save_cover(&self, cover_size: CoverSize, path: String, isbn: String) -> Result<(), surf::Error>{
@@ -69,17 +108,23 @@ impl Client {
     }
 
     pub async fn entity_by_isbn(&self, isbn: &str) -> Result<Entity, surf::Error> {
-        let uri = construct_uri(ApiType::Isbn, isbn);
+        let edition_json: Edition = block_on(self.get_edition(ApiType::Isbn, String::from(isbn)))?;
+        let work_ids = edition_json.get_works_ids();
 
-        let surf_client = surf::client().with(surf::middleware::Redirect::default());
-        let req = surf::get(uri);
-        let edition_json: Edition = surf_client.recv_json(req).await?;
+        let work_json: Work = block_on(self.get_work(work_ids[0].clone()))?;
+        let author_ids = work_json.get_authors_ids();
+        
+        let author_json: Author = block_on(self.get_author(author_ids[0].clone()))?;
 
-        let work: Entity = Entity::new(process_olid_key(&edition_json.key));
+        let entity: Entity = Entity::new(process_olid_key(&edition_json.key), edition_json, work_json, author_json);
 
-        Ok(work)
+        Ok(entity)
     }
+
+
 }
+
+
 
 fn process_olid_key(json_olid: &String) -> String {
     let index = json_olid.rfind('/').unwrap();
@@ -89,7 +134,16 @@ fn process_olid_key(json_olid: &String) -> String {
     return olid;
 }
 
-fn construct_uri(api_type: ApiType, isbn: &str) -> String{
+fn construct_ol_uri(ol_id: &str) -> String {
+    let base_url = String::from("https://openlibrary.org");
+    let url_end = String::from(".json");
+
+    let uri = format!("{}{}{}", base_url, ol_id, url_end);
+
+    return uri;
+}
+
+fn construct_uri(api_type: ApiType, isbn: &str) -> String {
     let base_url = String::from("https://openlibrary.org");
 
     let isbn_path = "/isbn/";
@@ -114,9 +168,12 @@ fn construct_cover_uri(cover_size: CoverSize, isbn: &str) -> String {
 }
 
 impl Entity {
-    pub fn new(olid: String) -> Self {
+    pub fn new(olid: String, edition: Edition, work: Work, author: Author) -> Self {
         return Self {
             olid: olid,
+            edition: edition,
+            work: work,
+            author: author,
         };
     }
     pub fn get_olid(&self) -> String {
