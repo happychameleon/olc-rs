@@ -9,6 +9,7 @@ use serde_json::{Value};
 use crate::edition::Edition;
 use crate::work::Work;
 use crate::author::Author;
+use crate::entity::Entity;
 
 pub enum Paths {
     Works,
@@ -40,14 +41,6 @@ pub enum CoverKey {
 
 pub struct Client {
     base_url: String,
-}
-
-#[derive(Clone)]
-pub struct Entity {
-    olid: String,
-    edition: Edition,
-    work: Work,
-    author: Author,
 }
 
 impl Client {
@@ -160,18 +153,4 @@ fn construct_cover_uri(cover_size: CoverSize, isbn: &str) -> String {
     let uri = format!("{}{}-{}{}", cover_url, cover_path, isbn, cover_end);
 
     return uri;
-}
-
-impl Entity {
-    pub fn new(olid: String, edition: Edition, work: Work, author: Author) -> Self {
-        return Self {
-            olid: olid,
-            edition: edition,
-            work: work,
-            author: author,
-        };
-    }
-    pub fn get_olid(&self) -> String {
-        self.olid.clone()
-    }
 }

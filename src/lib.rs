@@ -2,9 +2,10 @@ mod client;
 mod edition;
 mod work;
 mod author;
+mod entity;
 
 pub use client::Client;
-pub use client::Entity;
+//pub use client::Entity;
 pub use client::CoverSize;
 pub use client::ApiType;
 
@@ -29,3 +30,5 @@ pub use edition::Weight;
 pub use work::Work;
 
 pub use author::Author;
+
+pub use entity::Entity;
