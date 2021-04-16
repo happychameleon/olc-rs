@@ -11,15 +11,17 @@ use crate::work::Work;
 use crate::author::Author;
 
 pub enum Paths {
-    works,
-    authors,
-    books,
+    Works,
+    Authors,
+    Books,
+    ISBN,
 }
 
 pub enum ApiType {
-    Isbn,
     Works,
-    Editions,
+    Authors,
+    Books,
+    ISBN,
 }
 
 pub enum CoverSize {
@@ -57,10 +59,10 @@ impl Client {
 
     pub async fn get_edition_by_isbn(){}
 
-    pub async fn get_edition(&self, api_type: ApiType, search_key: String) -> Result<Edition, surf::Error> {
+    pub async fn get_edition(&self, search_key: String) -> Result<Edition, surf::Error> {
         let surf_client = surf::client().with(surf::middleware::Redirect::default());
-        let uri = construct_uri(api_type, &search_key);
-        println!("{}", uri);
+        let uri = create_ol_uri(ApiType::ISBN, &search_key);
+        println!("Edition uri: {}", uri);
         let req = surf_client.get(uri);
 
         let edition_json: Edition = block_on(surf_client.recv_json(req))?;
@@ -70,21 +72,19 @@ impl Client {
 
     pub async fn get_author(&self, ol_id: String) -> Result<Author, surf::Error> {
         let surf_client = surf::client().with(surf::middleware::Redirect::default());
-        let author_uri = construct_ol_uri(&ol_id);
-        println!("{}", author_uri);
+        let author_uri = create_ol_uri(ApiType::Authors, &ol_id);
+        println!("Author uri: {}", author_uri);
         let author_uri_req = surf_client.get(author_uri);
         
         let author_json: Author = surf_client.recv_json(author_uri_req).await?;
-
-        println!("is this empty?");
         
         Ok(author_json)
     }
 
     pub async fn get_work(&self, ol_id: String) -> Result<Work, surf::Error> {
         let surf_client = surf::client().with(surf::middleware::Redirect::default());
-        let work_uri = construct_ol_uri(&ol_id);
-        println!("{}", work_uri);
+        let work_uri = create_ol_uri(ApiType::Works, &ol_id);
+        println!("Work uri: {}", work_uri);
         let work_uri_req = surf_client.get(work_uri);
 
         let work_json: Work = surf_client.recv_json(work_uri_req).await?;
@@ -107,8 +107,8 @@ impl Client {
         Ok(())
     }
 
-    pub async fn entity_by_isbn(&self, isbn: &str) -> Result<Entity, surf::Error> {
-        let edition_json: Edition = block_on(self.get_edition(ApiType::Isbn, String::from(isbn)))?;
+    pub async fn entity_by_isbn(self, isbn: &str) -> Result<Entity, surf::Error> {
+        let edition_json: Edition = block_on(self.get_edition(String::from(isbn)))?;
         let work_ids = edition_json.get_works_ids();
 
         let work_json: Work = block_on(self.get_work(work_ids[0].clone()))?;
@@ -124,9 +124,7 @@ impl Client {
 
 }
 
-
-
-fn process_olid_key(json_olid: &String) -> String {
+fn process_olid_key(json_olid: &str) -> String {
     let index = json_olid.rfind('/').unwrap();
     let (book, s_olid) = json_olid.split_at(index + 1);
     let olid = String::from(s_olid);
@@ -134,24 +132,21 @@ fn process_olid_key(json_olid: &String) -> String {
     return olid;
 }
 
-fn construct_ol_uri(ol_id: &str) -> String {
+fn create_ol_uri (api_type: ApiType, key: &str) -> String {
     let base_url = String::from("https://openlibrary.org");
     let url_end = String::from(".json");
 
-    let uri = format!("{}{}{}", base_url, ol_id, url_end);
+    println!("{}", key);
 
-    return uri;
-}
+    let uri = match api_type {
+        ApiType::Works => format!("{}/{}/{}{}", base_url, "works", process_olid_key(key), url_end),
+        ApiType::Authors => format!("{}/{}/{}{}", base_url, "authors", process_olid_key(key), url_end),
+        ApiType::Books => format!("{}/{}/{}{}", base_url, "books", process_olid_key(key), url_end),
+        ApiType::ISBN => format!("{}/{}/{}{}", base_url, "isbn", key, url_end),
+    };
 
-fn construct_uri(api_type: ApiType, isbn: &str) -> String {
-    let base_url = String::from("https://openlibrary.org");
+    println!("create ol uri {}", uri);
 
-    let isbn_path = "/isbn/";
-    let url_end = ".json";
-    let uri = format!("{}{}{}{}", base_url, isbn_path, isbn, url_end);
-
-    println!("{}", uri);
-    
     return uri;
 }
 
