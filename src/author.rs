@@ -10,7 +10,7 @@ pub struct Author {
     #[serde(rename = "alternate_names")]
     pub alternate_names: Vec<String>,
     #[serde(default)]
-    pub bio: Bio,
+    pub bio: String,
     #[serde(default)]
     #[serde(rename = "birth_date")]
     pub birth_date: String,
