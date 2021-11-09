@@ -1,3 +1,6 @@
+use serde::Deserializer;
+use serde::de::{self, Unexpected};
+use std::fmt;
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -11,23 +14,23 @@ pub struct Work {
     #[serde(default)]
     pub authors: Vec<Authors>,
     #[serde(default)]
-    pub covers: Vec<usize>,
+    pub covers: Vec<isize>,
     #[serde(default)]
     pub links: Vec<Link>,
     #[serde(default)]
     pub id: Id, //No Idea What this looks like in real
     #[serde(default)]
     #[serde(rename = "lc_classifications")]
-    pub lc_classifications: LcClassifications, //No Idea What this looks like in real
+    pub lc_classifications: Vec<String>,
     #[serde(default)]
     pub subjects: Vec<String>,
     #[serde(default)]
     #[serde(rename = "first_publish_date")]
     pub first_publish_date: String, //No Idea What this looks like in real
     #[serde(default)]
-    pub description: String,
+    pub description: String, //It looks like OL59863W a discription type instead of a string
     #[serde(default)]
-    pub notes: Notes, //No Idea What this looks like in real
+    pub notes: String,
     pub revision: usize,
     #[serde(default)]
     #[serde(rename = "latest_revision")]
@@ -52,6 +55,14 @@ impl Work {
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct Description {
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub value: String,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Type {
     pub key: String,
 }
@@ -59,8 +70,12 @@ pub struct Type {
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Authors {
+    #[serde(default)]
+    pub key: String,
+    #[serde(default)]
     #[serde(rename = "type")]
     pub type_field: Type,
+    #[serde(default)]
     pub author: Author,
 }
 
@@ -90,13 +105,6 @@ pub struct Id {
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LcClassifications {
-    #[serde(rename = "$ref")]
-    pub ref_field: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Notes {
     #[serde(rename = "$ref")]
     pub ref_field: String,
 }

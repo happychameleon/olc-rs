@@ -27,7 +27,7 @@ pub struct Edition {
     #[serde(rename = "oclc_numbers")]
     pub oclc_numbers: Vec<String>,
     #[serde(default)]
-    pub covers: Vec<usize>,
+    pub covers: Vec<isize>,
     #[serde(default)]
     pub links: String,
     #[serde(default)]
@@ -93,7 +93,7 @@ pub struct Edition {
     #[serde(rename = "first_sentence")]
     pub first_sentence: String,
     #[serde(default)]
-    pub notes: Notes,
+    pub notes: String,
     pub revision: usize,
     #[serde(default)]
     #[serde(rename = "latest_revision")]
@@ -158,7 +158,6 @@ pub struct Type {
 pub struct Authors {
     pub key: String,
 }
-
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
