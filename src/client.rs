@@ -62,7 +62,7 @@ impl Client {
             }
             QueryType::ISBN(key) => {
                 let surf_client = surf::client().with(surf::middleware::Redirect::default());
-                let uri = compose_ol_uri(QueryType::OLID(key));
+                let uri = compose_ol_uri(QueryType::ISBN(key));
                 println!("Edition uri: {}", uri);
                 let req = surf_client.get(uri);
 
