@@ -18,11 +18,9 @@ pub enum Paths {
     ISBN,
 }
 
-pub enum ApiType {
-    Works,
-    Authors,
-    Books,
-    ISBN,
+pub enum QueryType {
+    OLID(String),
+    ISBN(String),
 }
 
 pub enum CoverSize {
@@ -50,39 +48,79 @@ impl Client {
         };
     }
 
-    pub async fn get_edition_by_isbn(){}
+    pub async fn get_edition(&self, query_type: QueryType) -> Result<Edition, surf::Error> {
+        match query_type {
+            QueryType::OLID(key) => {
+                let surf_client = surf::client().with(surf::middleware::Redirect::default());
+                let uri = compose_ol_uri(QueryType::OLID(key));
+                println!("Edition uri: {}", uri);
+                let req = surf_client.get(uri);
 
-    pub async fn get_edition(&self, search_key: String) -> Result<Edition, surf::Error> {
-        let surf_client = surf::client().with(surf::middleware::Redirect::default());
-        let uri = create_ol_uri(ApiType::ISBN, &search_key);
-        println!("Edition uri: {}", uri);
-        let req = surf_client.get(uri);
+                let edition_json: Edition = block_on(surf_client.recv_json(req))?;
+                
+                Ok(edition_json)
+            }
+            QueryType::ISBN(key) => {
+                let surf_client = surf::client().with(surf::middleware::Redirect::default());
+                let uri = compose_ol_uri(QueryType::OLID(key));
+                println!("Edition uri: {}", uri);
+                let req = surf_client.get(uri);
 
-        let edition_json: Edition = block_on(surf_client.recv_json(req))?;
-        
-        Ok(edition_json)
+                let edition_json: Edition = block_on(surf_client.recv_json(req))?;
+                
+                Ok(edition_json)
+            }
+        }        
     }
 
-    pub async fn get_author(&self, ol_id: String) -> Result<Author, surf::Error> {
-        let surf_client = surf::client().with(surf::middleware::Redirect::default());
-        let author_uri = create_ol_uri(ApiType::Authors, &ol_id);
-        println!("Author uri: {}", author_uri);
-        let author_uri_req = surf_client.get(author_uri);
-        
-        let author_json: Author = surf_client.recv_json(author_uri_req).await?;
-        
-        Ok(author_json)
+    pub async fn get_author(&self, query_type: QueryType) -> Result<Author, surf::Error> {
+        match query_type {
+            QueryType::OLID(key) => {
+                let surf_client = surf::client().with(surf::middleware::Redirect::default());
+                let author_uri = compose_ol_uri(QueryType::OLID(key));
+                println!("Author uri: {}", author_uri);
+                let author_uri_req = surf_client.get(author_uri);
+                
+                let author_json: Author = surf_client.recv_json(author_uri_req).await?;
+                
+                Ok(author_json)
+            }
+            QueryType::ISBN(key) => {
+                let surf_client = surf::client().with(surf::middleware::Redirect::default());
+                let author_uri = compose_ol_uri(QueryType::OLID(key));
+                println!("Author uri: {}", author_uri);
+                let author_uri_req = surf_client.get(author_uri);
+                
+                let author_json: Author = surf_client.recv_json(author_uri_req).await?;
+                
+                Ok(author_json)
+            }
+        }        
     }
 
-    pub async fn get_work(&self, ol_id: String) -> Result<Work, surf::Error> {
-        let surf_client = surf::client().with(surf::middleware::Redirect::default());
-        let work_uri = create_ol_uri(ApiType::Works, &ol_id);
-        println!("Work uri: {}", work_uri);
-        let work_uri_req = surf_client.get(work_uri);
+    pub async fn get_work(&self, query_type: QueryType) -> Result<Work, surf::Error> {
+        match query_type {
+            QueryType::OLID(key) => {
+                let surf_client = surf::client().with(surf::middleware::Redirect::default());
+                let work_uri = compose_ol_uri(QueryType::OLID(key));
+                println!("Work uri: {}", work_uri);
+                let work_uri_req = surf_client.get(work_uri);
 
-        let work_json: Work = surf_client.recv_json(work_uri_req).await?;
+                let work_json: Work = surf_client.recv_json(work_uri_req).await?;
 
-        Ok(work_json)
+                Ok(work_json)
+            }
+            QueryType::ISBN(key) => {
+                let surf_client = surf::client().with(surf::middleware::Redirect::default());
+                let work_uri = compose_ol_uri(QueryType::OLID(key));
+                println!("Work uri: {}", work_uri);
+                let work_uri_req = surf_client.get(work_uri);
+
+                let work_json: Work = surf_client.recv_json(work_uri_req).await?;
+
+                Ok(work_json)
+            }
+        }
     }
 
     pub async fn save_cover(&self, cover_size: CoverSize, path: String, isbn: String) -> Result<(), surf::Error>{
@@ -101,13 +139,13 @@ impl Client {
     }
 
     pub async fn entity_by_isbn(self, isbn: &str) -> Result<Entity, surf::Error> {
-        let edition_json: Edition = block_on(self.get_edition(String::from(isbn)))?;
+        let edition_json: Edition = block_on(self.get_edition(QueryType::ISBN(String::from(isbn))))?;
         let work_ids = edition_json.get_works_ids();
 
-        let work_json: Work = block_on(self.get_work(work_ids[0].clone()))?;
+        let work_json: Work = block_on(self.get_work(QueryType::OLID(work_ids[0].clone())))?;
         let author_ids = work_json.get_authors_ids();
         
-        let author_json: Author = block_on(self.get_author(author_ids[0].clone()))?;
+        let author_json: Author = block_on(self.get_author(QueryType::OLID(author_ids[0].clone())))?;
 
         let entity: Entity = Entity::new(process_olid_key(&edition_json.key), edition_json, work_json, author_json);
 
@@ -118,24 +156,28 @@ impl Client {
 }
 
 fn process_olid_key(json_olid: &str) -> String {
-    let index = json_olid.rfind('/').unwrap();
-    let (book, s_olid) = json_olid.split_at(index + 1);
-    let olid = String::from(s_olid);
+    let index = json_olid.rfind('/');
+
+    let olid = match index {
+        Some(index) => {
+            let (book, s_olid) = json_olid.split_at(index + 1);
+            String::from(s_olid)
+        }
+        None => String::from(json_olid),
+    };
 
     return olid;
 }
 
-fn create_ol_uri (api_type: ApiType, key: &str) -> String {
+fn compose_ol_uri (query_type: QueryType) -> String {
     let base_url = String::from("https://openlibrary.org");
     let url_end = String::from(".json");
 
-    println!("{}", key);
+    //println!("{}", key);
 
-    let uri = match api_type {
-        ApiType::Works => format!("{}/{}/{}{}", base_url, "works", process_olid_key(key), url_end),
-        ApiType::Authors => format!("{}/{}/{}{}", base_url, "authors", process_olid_key(key), url_end),
-        ApiType::Books => format!("{}/{}/{}{}", base_url, "books", process_olid_key(key), url_end),
-        ApiType::ISBN => format!("{}/{}/{}{}", base_url, "isbn", key, url_end),
+    let uri = match query_type {
+        QueryType::OLID(key) => format!("{}/{}/{}{}", base_url, "q", process_olid_key(&key), url_end),
+        QueryType::ISBN(key) => format!("{}/{}/{}{}", base_url, "isbn", key, url_end),
     };
 
     println!("create ol uri {}", uri);
