@@ -87,7 +87,20 @@ impl Client {
             }
             QueryType::ISBN(key) => {
                 let surf_client = surf::client().with(surf::middleware::Redirect::default());
-                let author_uri = compose_ol_uri(QueryType::OLID(key));
+                let uri = compose_ol_uri(QueryType::ISBN(key));
+                let req = surf_client.get(uri);
+
+                let edition_json: Edition = block_on(surf_client.recv_json(req))?;
+                let work_ids = edition_json.get_works_ids();
+
+                let work_uri = compose_ol_uri(QueryType::OLID(work_ids[0].clone()));
+                println!("Work uri: {}", work_uri);
+                let work_uri_req = surf_client.get(work_uri);
+
+                let work_json: Work = block_on(surf_client.recv_json(work_uri_req))?;
+                let author_ids = work_json.get_authors_ids();
+
+                let author_uri = compose_ol_uri(QueryType::OLID(author_ids[0].clone()));
                 println!("Author uri: {}", author_uri);
                 let author_uri_req = surf_client.get(author_uri);
                 
@@ -112,7 +125,13 @@ impl Client {
             }
             QueryType::ISBN(key) => {
                 let surf_client = surf::client().with(surf::middleware::Redirect::default());
-                let work_uri = compose_ol_uri(QueryType::OLID(key));
+                let uri = compose_ol_uri(QueryType::ISBN(key));
+                let req = surf_client.get(uri);
+
+                let edition_json: Edition = block_on(surf_client.recv_json(req))?;
+                let work_ids = edition_json.get_works_ids();
+
+                let work_uri = compose_ol_uri(QueryType::OLID(work_ids[0].clone()));
                 println!("Work uri: {}", work_uri);
                 let work_uri_req = surf_client.get(work_uri);
 
