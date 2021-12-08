@@ -76,7 +76,7 @@ pub struct Edition {
     pub contributions: Vec<String>,
     #[serde(default)]
     #[serde(rename = "dewey_decimal_class")]
-    pub dewey_decimal_class: String,
+    pub dewey_decimal_class: Vec<String>,
     #[serde(default)]
     pub genres: Vec<String>,
     #[serde(default)]
