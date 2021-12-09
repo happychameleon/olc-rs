@@ -50,7 +50,7 @@ pub struct Edition {
     pub weight: Weight,
     #[serde(default)]
     #[serde(rename = "edition_name")]
-    pub edition_name: EditionName,
+    pub edition_name: String, //OL16341636M uses a string here instead of a EditionName struct
     #[serde(default)]
     #[serde(rename = "number_of_pages")]
     pub number_of_pages: usize,
