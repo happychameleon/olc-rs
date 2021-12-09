@@ -237,7 +237,9 @@ pub struct Works {
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Identifiers {
+    #[serde(default)]
     pub librarything: Vec<String>,
+    #[serde(default)]
     pub goodreads: Vec<String>,
 }
 
