@@ -204,11 +204,17 @@ fn compose_ol_uri (query_type: QueryType) -> String {
 // https://covers.openlibrary.org/b/isbn/9781849352826-L.jpg
 // https://covers.openlibrary.org/b/$key/$value-$size.jpg
 fn construct_cover_uri(cover_size: CoverSize, isbn: &str) -> String {
+    let cover_size = match cover_size {
+        CoverSize::L => "L",
+        CoverSize::M => "M",
+        CoverSize::S => "S",
+    };
+    
     let cover_url = String::from("https://covers.openlibrary.org/b");
     let cover_path = "/isbn/";
     let cover_end = ".jpg";
 
-    let uri = format!("{}{}-{}{}", cover_url, cover_path, isbn, cover_end);
+    let uri = format!("{}{}{}-{}{}", cover_url, cover_path, isbn, cover_size, cover_end);
 
     return uri;
 }
