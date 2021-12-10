@@ -7,6 +7,7 @@ mod entity;
 pub use client::Client;
 pub use client::CoverSize;
 pub use client::QueryType;
+pub use client::CoverKey;
 
 pub use edition::Edition;
 pub use edition::ByStatement;

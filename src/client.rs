@@ -30,11 +30,11 @@ pub enum CoverSize {
 }
 
 pub enum CoverKey {
-    ISBN,
-    OCLC,
-    LCCN,
-    OLID,
-    ID,
+    ISBN(String),
+    OCLC(String),
+    LCCN(String),
+    OLID(String),
+    ID(String),
 }
 
 pub struct Client {
@@ -135,18 +135,26 @@ impl Client {
         }
     }
 
-    pub async fn save_cover(&self, cover_size: CoverSize, path: String, isbn: String) -> Result<(), surf::Error>{
-        let uri = construct_cover_uri(cover_size, &isbn);
-
+    pub async fn save_cover(&self, cover_size: CoverSize, path: String, cover_key: CoverKey) -> Result<(), surf::Error>{
         let surf_client = surf::client().with(surf::middleware::Redirect::default());
-        let req = surf::get(uri);
-        let cover_image = surf_client.recv_bytes(req).await?;
-        assert!(cover_image.len() > 0);
 
-        let path_str = format!("{}{}.jpg", path, isbn);
-        let mut cover_file = File::create(path_str).unwrap();
-        cover_file.write_all(&cover_image).unwrap();
+        match cover_key {
+            CoverKey::ISBN(isbn) => {
+                let uri = construct_cover_uri(cover_size, &isbn);
+                let req = surf::get(uri);
+                let cover_image = surf_client.recv_bytes(req).await?;
+                assert!(cover_image.len() > 0);
 
+                let path_str = format!("{}", path);
+                let mut cover_file = File::create(path_str)?;
+                cover_file.write_all(&cover_image)?;
+            }
+            CoverKey::LCCN(isbn) => {}
+            CoverKey::OCLC(isbn) => {}
+            CoverKey::OLID(isbn) => {}
+            CoverKey::ID(isbn) => {}           
+        }
+        
         Ok(())
     }
 
