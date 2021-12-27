@@ -12,37 +12,36 @@ use void::Void;
 pub struct Work {
     pub key: String,
     pub title: String,
-    #[serde(default)]
-    pub subtitle: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub subtitle: Option<String>,
     #[serde(rename = "type")]
     pub type_field: Type,
-    #[serde(default)]
-    pub authors: Vec<Authors>,
-    #[serde(default)]
-    pub covers: Vec<isize>,
-    #[serde(default)]
-    pub links: Vec<Link>,
-    #[serde(default)]
-    pub id: Id, //No Idea What this looks like in real
-    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub authors: Option<Vec<Authors>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub covers: Option<Vec<isize>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub links: Option<Vec<Link>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub id: Option<Id>, //No Idea What this looks like in real
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "lc_classifications")]
-    pub lc_classifications: Vec<String>,
-    #[serde(default)]
-    pub subjects: Vec<String>,
-    #[serde(default)]
+    pub lc_classifications: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub subjects: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "first_publish_date")]
-    pub first_publish_date: String, //No Idea What this looks like in real
-    #[serde(default)]
-    #[serde(deserialize_with = "string_or_struct")]
-    pub description: Description, //It looks like OL59863W a discription type instead of a string
-    #[serde(default)]
-    pub notes: String,
+    pub first_publish_date: Option<String>, //No Idea What this looks like in real
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<DescEnum>, //It looks like OL59863W a discription type instead of a string
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub notes: Option<String>,
     pub revision: usize,
-    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "latest_revision")]
-    pub latest_revision: usize,
-    #[serde(default)]
-    pub created: Created,
+    pub latest_revision: Option<usize>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub created: Option<Created>,
     #[serde(rename = "last_modified")]
     pub last_modified: LastModified,
 }
@@ -51,7 +50,9 @@ impl Work {
     pub fn get_authors_ids (&self) -> Vec<String> {
         let mut author_ids: Vec<String> = Vec::new();
 
-        for authors in self.authors.iter() {
+        let authors = self.authors.as_ref().unwrap();
+
+        for authors in authors.iter() {
             author_ids.push(authors.author.key.clone());
         }
 
@@ -66,6 +67,14 @@ pub struct Description {
     #[serde(rename = "type")]
     pub type_field: String,
     pub value: String,
+}
+
+#[derive(Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[serde(untagged)]
+pub enum DescEnum {
+    DescString(String),
+    DescType(Description),
 }
 
 // From https://serde.rs/string-or-struct.html
