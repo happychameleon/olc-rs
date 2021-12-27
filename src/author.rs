@@ -14,48 +14,47 @@ pub struct Author {
     pub name: String,
     #[serde(rename = "type")]
     pub type_field: Type,
-    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "alternate_names")]
-    pub alternate_names: Vec<String>,
-    #[serde(default)]
-    #[serde(deserialize_with = "string_or_struct")]
-    pub bio: Bio,
-    #[serde(default)]
+    pub alternate_names: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub bio: Option<Bio>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "birth_date")]
-    pub birth_date: String,
-    #[serde(default)]
+    pub birth_date: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "death_date")]
-    pub death_date: String,
-    #[serde(default)]
-    pub location: Location, //No Idea What this looks like in real
-    #[serde(default)]
-    pub date: Date, //No Idea What this looks like in real
-    #[serde(default)]
+    pub death_date: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub location: Option<Location>, //No Idea What this looks like in real
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub date: Option<Date>, //No Idea What this looks like in real
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "entity_type")]
-    pub entity_type: EntityType, //No Idea What this looks like in real
-    #[serde(default)]
+    pub entity_type: Option<EntityType>, //No Idea What this looks like in real
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "fuller_name")]
-    pub fuller_name: FullerName, //No Idea What this looks like in real
-    #[serde(default)]
+    pub fuller_name: Option<FullerName>, //No Idea What this looks like in real
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "personal_name")]
-    pub personal_name: String,
-    #[serde(default)]
-    pub title: String, //According to https://openlibrary.org/authors/OL29497A.json looks like a String
-    #[serde(default)]
-    pub photos: Vec<usize>,
-    #[serde(default)]
-    pub links: Vec<Link>,
-    #[serde(default)]
+    pub personal_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>, //According to https://openlibrary.org/authors/OL29497A.json looks like a String
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub photos: Option<Vec<usize>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub links: Option<Vec<Link>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "remote_ids")]
-    pub remote_ids: RemoteIds,
-    #[serde(default)]
-    pub wikipedia: Wikipedia, //No Idea What this looks like in real
+    pub remote_ids: Option<RemoteIds>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wikipedia: Option<Wikipedia>, //No Idea What this looks like in real
     pub revision: usize,
-    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "latest_revision")]
-    pub latest_revision: usize,
-    #[serde(default)]
-    pub created: Created,
+    pub latest_revision: Option<usize>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub created: Option<Created>,
     #[serde(rename = "last_modified")]
     pub last_modified: LastModified,
 }
@@ -74,60 +73,11 @@ pub struct Bio {
     pub value: String,
 }
 
-// From https://serde.rs/string-or-struct.html
-impl FromStr for Bio {
-    type Err = Void;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok( Bio {
-            type_field: "/type/text".to_string(),
-            value: s.to_string(),
-        })
-    }
-}
-
-fn string_or_struct<'de, T, D>(deserializer: D) -> Result<T, D::Error>
-where
-    T: Deserialize<'de> + FromStr<Err = Void>,
-    D: Deserializer<'de>,
-{
-    // This is a Visitor that forwards string types to T's `FromStr` impl and
-    // forwards map types to T's `Deserialize` impl. The `PhantomData` is to
-    // keep the compiler from complaining about T being an unused generic type
-    // parameter. We need T in order to know the Value type for the Visitor
-    // impl.
-    struct StringOrStruct<T>(PhantomData<fn() -> T>);
-
-    impl<'de, T> Visitor<'de> for StringOrStruct<T>
-    where
-        T: Deserialize<'de> + FromStr<Err = Void>,
-    {
-        type Value = T;
-
-        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str("string or map")
-        }
-
-        fn visit_str<E>(self, value: &str) -> Result<T, E>
-        where
-            E: de::Error,
-        {
-            Ok(FromStr::from_str(value).unwrap())
-        }
-
-        fn visit_map<M>(self, map: M) -> Result<T, M::Error>
-        where
-            M: MapAccess<'de>,
-        {
-            // `MapAccessDeserializer` is a wrapper that turns a `MapAccess`
-            // into a `Deserializer`, allowing it to be used as the input to T's
-            // `Deserialize` implementation. T then deserializes itself using
-            // the entries from the map visitor.
-            Deserialize::deserialize(de::value::MapAccessDeserializer::new(map))
-        }
-    }
-
-    deserializer.deserialize_any(StringOrStruct(PhantomData))
+#[derive(Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(untagged)]
+pub enum BioEnum {
+    BioString(String),
+    BioType(Bio)
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
