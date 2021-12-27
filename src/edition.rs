@@ -13,117 +13,116 @@ pub struct Edition {
 
     pub key: String,
     pub title: String,
-    #[serde(default)]
-    pub full_title: String,
-    #[serde(default)]
-    pub subtitle: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub full_title: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub subtitle: Option<String>,
     #[serde(rename = "type")]
     pub type_field: Type,
-    #[serde(default)]
-    pub authors: Vec<Authors>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub authors: Option<Vec<Authors>>,
     pub works: Vec<Works>,
-    #[serde(default)]
-    pub identifiers: Identifiers,
-    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub identifiers: Option<Identifiers>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "isbn_10")]
-    pub isbn10: Vec<String>,
-    #[serde(default)]
+    pub isbn10: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "isbn_13")]
-    pub isbn13: Vec<String>,
-    #[serde(default)]
-    pub lccn: Vec<String>,
-    #[serde(default)]
-    pub ocaid: String,
-    #[serde(default)]
+    pub isbn13: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub lccn: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ocaid: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "oclc_numbers")]
-    pub oclc_numbers: Vec<String>,
-    #[serde(default)]
-    pub covers: Vec<isize>,
-    #[serde(default)]
-    pub links: String,
-    #[serde(default)]
-    pub languages: Vec<Language>,
-    #[serde(default)]
+    pub oclc_numbers: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub covers: Option<Vec<isize>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub links: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub languages: Option<Vec<Language>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "by_statement")]
-    pub by_statement: String,
-    #[serde(default)]
-    pub weight: Weight,
-    #[serde(default)]
+    pub by_statement: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub weight: Option<Weight>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "edition_name")]
-    pub edition_name: String, //OL16341636M uses a string here instead of a EditionName struct
-    #[serde(default)]
+    pub edition_name: Option<String>, //OL16341636M uses a string here instead of a EditionName struct
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "number_of_pages")]
-    pub number_of_pages: usize,
-    #[serde(default)]
-    pub pagination: String,
-    #[serde(default)]
+    pub number_of_pages: Option<usize>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pagination: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "physical_dimensinos")]
-    pub physical_dimensions: PhysicalDimensions,
-    #[serde(default)]
+    pub physical_dimensions: Option<PhysicalDimensions>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "physical_format")]
-    pub physical_format: String,
-    #[serde(default)]
+    pub physical_format: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "publish_country")]
-    pub publish_country: String,
-    #[serde(default)]
+    pub publish_country: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "publish_date")]
-    pub publish_date: String,
-    #[serde(default)]
-    pub publish_places: Vec<String>,
-    #[serde(default)]
-    pub publishers: Vec<String>,
-    #[serde(default)]
-    pub contributions: Vec<String>,
-    #[serde(default)]
+    pub publish_date: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub publish_places: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub publishers: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub contributions: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "dewey_decimal_class")]
-    pub dewey_decimal_class: Vec<String>,
-    #[serde(default)]
-    pub genres: Vec<String>,
-    #[serde(default)]
+    pub dewey_decimal_class: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub genres: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "lc_classifications")]
-    pub lc_classifications: Vec<String>,
-    #[serde(default)]
+    pub lc_classifications: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "other_titles")]
-    pub other_titles: Vec<String>,
-    #[serde(default)]
-    pub series: Vec<String>,
-    #[serde(default)]
+    pub other_titles: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub series: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "source_records")]
-    pub source_records: Vec<String>,
-    #[serde(default)]
-    pub subjects: Vec<String>,
-    #[serde(default)]
+    pub source_records: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub subjects: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "work_titles")]
-    pub work_titles: String,
-    #[serde(default)]
+    pub work_titles: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "table_of_contents")]
-    pub table_of_contents: TableOfContents,
-    #[serde(default)]
-    pub description: String,
-    #[serde(default)]
+    pub table_of_contents: Option<TableOfContents>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "first_sentence")]
-    pub first_sentence: String,
-    #[serde(default)]
-    #[serde(deserialize_with = "string_or_struct")]
-    pub notes: Notes,
+    pub first_sentence: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub notes: Option<Note>,
     pub revision: usize,
-    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "latest_revision")]
-    pub latest_revision: usize,
+    pub latest_revision: Option<usize>,
     pub created: Created,
     #[serde(rename = "last_modified")]
     pub last_modified: LastModified,
-    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "isbn_invalid")]
-    pub isbn_invalid: Vec<String>,
-    #[serde(default)]
+    pub isbn_invalid: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "ia_box_id")]
-    pub ia_box_id: Vec<String>,
+    pub ia_box_id: Option<Vec<String>>,
 }
 
 impl Edition {
     pub fn get_author (&self) -> Vec<Authors> {
-        self.authors.clone()
+        self.authors.as_ref().unwrap().clone()
     }
 
     pub fn get_works_ids (&self) -> Vec<String> {
@@ -146,60 +145,12 @@ pub struct Notes {
     pub value: String,
 }
 
-// From https://serde.rs/string-or-struct.html
-impl FromStr for Notes {
-    type Err = Void;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok( Notes {
-            type_field: "/type/text".to_string(),
-            value: s.to_string(),
-        })
-    }
-}
-
-fn string_or_struct<'de, T, D>(deserializer: D) -> Result<T, D::Error>
-where
-    T: Deserialize<'de> + FromStr<Err = Void>,
-    D: Deserializer<'de>,
-{
-    // This is a Visitor that forwards string types to T's `FromStr` impl and
-    // forwards map types to T's `Deserialize` impl. The `PhantomData` is to
-    // keep the compiler from complaining about T being an unused generic type
-    // parameter. We need T in order to know the Value type for the Visitor
-    // impl.
-    struct StringOrStruct<T>(PhantomData<fn() -> T>);
-
-    impl<'de, T> Visitor<'de> for StringOrStruct<T>
-    where
-        T: Deserialize<'de> + FromStr<Err = Void>,
-    {
-        type Value = T;
-
-        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str("string or map")
-        }
-
-        fn visit_str<E>(self, value: &str) -> Result<T, E>
-        where
-            E: de::Error,
-        {
-            Ok(FromStr::from_str(value).unwrap())
-        }
-
-        fn visit_map<M>(self, map: M) -> Result<T, M::Error>
-        where
-            M: MapAccess<'de>,
-        {
-            // `MapAccessDeserializer` is a wrapper that turns a `MapAccess`
-            // into a `Deserializer`, allowing it to be used as the input to T's
-            // `Deserialize` implementation. T then deserializes itself using
-            // the entries from the map visitor.
-            Deserialize::deserialize(de::value::MapAccessDeserializer::new(map))
-        }
-    }
-
-    deserializer.deserialize_any(StringOrStruct(PhantomData))
+#[derive(Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[serde(untagged)]
+pub enum Note {
+    NoteType(Notes),
+    NoteString(String),
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
@@ -237,10 +188,10 @@ pub struct Works {
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Identifiers {
-    #[serde(default)]
-    pub librarything: Vec<String>,
-    #[serde(default)]
-    pub goodreads: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub librarything: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub goodreads: Option<Vec<String>>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
