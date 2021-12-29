@@ -26,6 +26,10 @@ pub use edition::TableOfContents;
 pub use edition::Title;
 pub use edition::Type;
 pub use edition::Weight;
+pub use edition::Authors;
+pub use edition::Works;
+pub use edition::Note;
+pub use edition::Notes;
 
 pub use work::Work;
 
