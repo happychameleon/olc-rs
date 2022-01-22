@@ -97,7 +97,7 @@ pub struct Edition {
     pub work_titles: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "table_of_contents")]
-    pub table_of_contents: Option<TableOfContents>,
+    pub table_of_contents: Option<Vec<TableOfContents>>, //https://openlibrary.org/books/OL26443497M/Anarchism_in_Latin_America
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -258,7 +258,13 @@ pub struct PublishDate {
 #[serde(rename_all = "camelCase")]
 pub struct TableOfContents {
     #[serde(rename = "type")]
-    pub type_field: String,
+    pub type_field: Type,
+    pub level: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub label: Option<String>,
+    pub title: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pagenum: Option<String>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
