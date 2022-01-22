@@ -18,7 +18,7 @@ pub struct Author {
     #[serde(rename = "alternate_names")]
     pub alternate_names: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub bio: Option<Bio>,
+    pub bio: Option<BioEnum>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "birth_date")]
     pub birth_date: Option<String>,
